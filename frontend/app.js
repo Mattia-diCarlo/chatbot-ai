@@ -4,6 +4,7 @@ function setPersona(value) {
     persona = value;
 }
 
+// ENTER
 document.addEventListener("keydown", (e) => {
     if (e.key === "Enter") sendMessage();
 });
@@ -16,6 +17,7 @@ async function sendMessage() {
 
     const chat = document.getElementById("chat");
 
+    // USER MESSAGE
     const userDiv = document.createElement("div");
     userDiv.className = "message user";
     userDiv.innerText = text;
@@ -23,8 +25,17 @@ async function sendMessage() {
 
     input.value = "";
 
+    // AI MESSAGE
     const aiDiv = document.createElement("div");
     aiDiv.className = "message ai";
+
+    // 🧠 FIX "CIAO"
+    if (text.toLowerCase() === "ciao") {
+        aiDiv.innerText = "ciao, how can i help you today";
+        chat.appendChild(aiDiv);
+        return;
+    }
+
     aiDiv.innerText = "sta scrivendo...";
     chat.appendChild(aiDiv);
 
@@ -32,7 +43,9 @@ async function sendMessage() {
 
         const res = await fetch("/chat", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json"
+            },
             body: JSON.stringify({
                 message: text,
                 persona: persona
@@ -40,6 +53,7 @@ async function sendMessage() {
         });
 
         const data = await res.json();
+
         aiDiv.innerText = data.reply;
 
     } catch (err) {
