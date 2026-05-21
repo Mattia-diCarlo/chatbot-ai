@@ -1,16 +1,13 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
-import requests
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="frontend")
 CORS(app)
 
-API_KEY = "AIzaSyBxNbXv6fBE9ms_4M2ljNpmha3seETkBgw"
-MODEL = "gemini-2.5-flash"
+@app.route("/")
+def home():
+    return send_from_directory("frontend", "index.html")
 
-
-@app.route("/chat", methods=["POST"])
-def chat():
 
     try:
         data = request.json
