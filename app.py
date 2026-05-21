@@ -1,7 +1,8 @@
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, send_from_directory, jsonify, request
 from flask_cors import CORS
+import os
 
-app = Flask(__name__, static_folder="frontend")
+app = Flask(__name__, static_folder="frontend", static_url_path="")
 CORS(app)
 
 @app.route("/")
