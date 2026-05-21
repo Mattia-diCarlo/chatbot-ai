@@ -1,51 +1,51 @@
-function toggleTheme() {
-    if (document.body.classList.contains("dark")) {
-        document.body.classList.remove("dark");
-        document.body.classList.add("light");
-    } else {
-        document.body.classList.remove("light");
-        document.body.classList.add("dark");
-    }
+let persona = "normale";
+
+function setPersona(value) {
+    persona = value;
 }
 
-document.body.classList.add("light");
+// ENTER INVIO
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") sendMessage();
+});
 
 async function sendMessage() {
-    const input = document.getElementById("message");
-    const chat = document.getElementById("chat");
 
-    const text = input.value;
+    const input = document.getElementById("input");
+    const text = input.value.trim();
     if (!text) return;
 
-    chat.innerHTML += `<div class="user">${text}</div>`;
+    const chat = document.getElementById("chat");
+
+    // USER
+    const userDiv = document.createElement("div");
+    userDiv.className = "message user";
+    userDiv.innerText = text;
+    chat.appendChild(userDiv);
+
     input.value = "";
 
-    // typing
-    const typing = document.createElement("div");
-    typing.className = "bot";
-    typing.id = "typing";
-    typing.innerText = "sta scrivendo...";
-    chat.appendChild(typing);
+    // AI
+    const aiDiv = document.createElement("div");
+    aiDiv.className = "message ai";
+    aiDiv.innerText = "Scrivo...";
+    chat.appendChild(aiDiv);
 
     try {
-        const res = await fetch("/chat", {
+
+        const res = await fetch("http://127.0.0.1:5000/chat", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 message: text,
-                persona: "pirandello"
+                persona: persona
             })
         });
 
         const data = await res.json();
-
-        document.getElementById("typing").remove();
-        chat.innerHTML += `<div class="bot">${data.reply}</div>`;
+        aiDiv.innerText = data.reply;
 
     } catch (err) {
-        document.getElementById("typing").remove();
-        chat.innerHTML += `<div class="bot">Errore di connessione</div>`;
+        aiDiv.innerText = "Errore connessione server";
     }
 }
