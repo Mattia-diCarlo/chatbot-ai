@@ -4,7 +4,6 @@ function setPersona(value) {
     persona = value;
 }
 
-// ENTER INVIO
 document.addEventListener("keydown", (e) => {
     if (e.key === "Enter") sendMessage();
 });
@@ -17,7 +16,6 @@ async function sendMessage() {
 
     const chat = document.getElementById("chat");
 
-    // USER
     const userDiv = document.createElement("div");
     userDiv.className = "message user";
     userDiv.innerText = text;
@@ -25,15 +23,14 @@ async function sendMessage() {
 
     input.value = "";
 
-    // AI
     const aiDiv = document.createElement("div");
     aiDiv.className = "message ai";
-    aiDiv.innerText = "Scrivo...";
+    aiDiv.innerText = "sta scrivendo...";
     chat.appendChild(aiDiv);
 
     try {
 
-        const res = await fetch("http://127.0.0.1:5000/chat", {
+        const res = await fetch("/chat", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
