@@ -1,3 +1,15 @@
+function toggleTheme() {
+    if (document.body.classList.contains("dark")) {
+        document.body.classList.remove("dark");
+        document.body.classList.add("light");
+    } else {
+        document.body.classList.remove("light");
+        document.body.classList.add("dark");
+    }
+}
+
+document.body.classList.add("light");
+
 async function sendMessage() {
     const input = document.getElementById("message");
     const chat = document.getElementById("chat");
@@ -5,12 +17,10 @@ async function sendMessage() {
     const text = input.value;
     if (!text) return;
 
-    // mostra messaggio utente
     chat.innerHTML += `<div class="user">${text}</div>`;
-
     input.value = "";
 
-    // 👇 SOLO "sta scrivendo"
+    // typing
     const typing = document.createElement("div");
     typing.className = "bot";
     typing.id = "typing";
@@ -31,9 +41,7 @@ async function sendMessage() {
 
         const data = await res.json();
 
-        // rimuove typing
         document.getElementById("typing").remove();
-
         chat.innerHTML += `<div class="bot">${data.reply}</div>`;
 
     } catch (err) {
