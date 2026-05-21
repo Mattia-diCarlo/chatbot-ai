@@ -1,96 +1,74 @@
 from flask import Flask, send_from_directory, jsonify, request
 from flask_cors import CORS
 import os
+import requests
 
 app = Flask(__name__, static_folder="frontend", static_url_path="")
 CORS(app)
 
+# 🔑 API KEY E MODEL (Render ENV VAR)
+API_KEY = os.environ.get("API_KEY")
+MODEL = "gemini-2.5-flash"
+
+
+# 🌐 FRONTEND
 @app.route("/")
 def home():
     return send_from_directory("frontend", "index.html")
 
+
+# 💬 CHAT ROUTE (FIX 404)
+@app.route("/chat", methods=["POST"])
+def chat():
 
     try:
         data = request.json
         user_message = data.get("message", "")
         persona = data.get("persona", "normale")
 
-        # 🎭 PIRANDELLO 2.0
+        # 🎭 PIRANDELLO MODE
         if persona == "pirandello":
 
             msg = user_message.lower()
 
-            # 🧠 VITA
-            if any(x in msg for x in ["vita", "chi sei", "parlami di te", "biografia"]):
+            if any(x in msg for x in ["vita", "chi sei", "biografia"]):
 
                 user_message = """
-Sei Luigi Pirandello e racconta la tua vita in modo completo.
-
-Includi:
+Sei Luigi Pirandello e racconta la tua vita in modo completo:
 - nascita ad Agrigento nel 1867
-- studi e formazione
-- crisi familiare e psicologica
-- rapporto con la moglie malata
-- Premio Nobel per la letteratura (1934)
-- nascita del concetto di umorismo
-- teoria delle maschere e identità
-
-Racconta in prima persona.
+- formazione e studi
+- crisi familiare
+- Premio Nobel 1934
+- teoria dell’umorismo
+- maschere e identità
 """
 
-            # 📚 OPERE
-            elif any(x in msg for x in ["opera", "opere", "sei personaggi", "fu mattia", "uno nessuno"]):
+            elif any(x in msg for x in ["opere", "sei personaggi", "mattia", "uno nessuno"]):
 
                 user_message = """
-Sei Luigi Pirandello e spiega le tue opere principali:
-
+Spiega:
 - Il fu Mattia Pascal
 - Uno, nessuno e centomila
 - Sei personaggi in cerca d’autore
-
-Spiega i temi:
-- identità
-- maschera sociale
-- relativismo della verità
-- crisi dell’io
+Temi: identità, maschere, relativismo
 """
 
-            # 🎭 TEMI
-            elif any(x in msg for x in ["maschera", "identità", "umorismo", "tema"]):
-
-                user_message = """
-Sei Luigi Pirandello e spiega i tuoi temi:
-
-- maschere sociali
-- identità multipla
-- umorismo (sentimento del contrario)
-- crisi dell’individuo
-
-Tono filosofico e riflessivo.
-"""
-
-            # 🎭 DEFAULT
             else:
+                user_message = "Rispondi come Pirandello: " + user_message
 
-                user_message = (
-                    "Rispondi come Luigi Pirandello in modo filosofico e teatrale. "
-                    "Domanda: " + user_message
-                )
-
-        # 🌐 GEMINI API
+        # 🌐 GEMINI CALL
         url = f"https://generativelanguage.googleapis.com/v1/models/{MODEL}:generateContent?key={API_KEY}"
 
         payload = {
             "contents": [
-                {
-                    "parts": [{"text": user_message}]
-                }
+                {"parts": [{"text": user_message}]}
             ]
         }
 
         response = requests.post(url, json=payload)
         result = response.json()
 
+        # ❌ error handling
         if "error" in result:
             return jsonify({"reply": "⚠️ " + result["error"]["message"]})
 
@@ -99,9 +77,11 @@ Tono filosofico e riflessivo.
         return jsonify({"reply": reply})
 
     except Exception as e:
-        print(e)
+        print("ERROR:", e)
         return jsonify({"reply": "Errore server o AI"})
 
 
+# 🚀 RENDER START
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
