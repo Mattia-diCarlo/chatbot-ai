@@ -1,47 +1,18 @@
 <!DOCTYPE html>
-<html lang="it">
-
+<html>
 <head>
-    <meta charset="UTF-8">
     <title>Chatbot AI</title>
     <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-<div class="app">
+<div id="chat"></div>
 
-    <!-- TOP BAR -->
-    <div class="topbar">
-        <div>Chatbot AI</div>
-
-        <!-- modalità Pirandello -->
-        <select onchange="setPersona(this.value)">
-            <option value="normale">Normale</option>
-            <option value="pirandello">Pirandello</option>
-        </select>
-    </div>
-
-    <!-- CHAT -->
-    <div id="chat"></div>
-
-    <!-- INPUT AREA -->
-    <div class="input-area">
-
-        <input
-            id="input"
-            type="text"
-            placeholder="Scrivi un messaggio..."
-            autocomplete="off"
-        >
-
-        <button onclick="sendMessage()">Invia</button>
-
-    </div>
-
+<div class="input-box">
+    <input id="message" placeholder="Scrivi un messaggio...">
+    <button onclick="sendMessage()">Invia</button>
 </div>
 
-<!-- JS -->
 <script src="app.js"></script>
 
 </body>
